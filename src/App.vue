@@ -17,7 +17,9 @@
   text-align: center;
   color: #2c3e50;
 }
-
+ul,ol{
+  list-style-type: none;
+  }
 #nav a {
   font-weight: bold;
   color: #2c3e50;
