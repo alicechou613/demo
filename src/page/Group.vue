@@ -12,7 +12,6 @@
                 class="filter-tree"
                 :data="data"
                 :props="defaultProps"
-                default-expand-all
                 :filter-node-method="filterNode"
                 @node-click="handleNodeClick"
                 ref="tree">
@@ -24,11 +23,12 @@
                 <el-input v-model="groupSearchContent" placeholder="请输入内容"></el-input>
             </div>
             <div style="text-align:right;margin-right:20px;padding:5px;">
-                <el-button type="primary" icon="el-icon-plus" >添加新群组</el-button>
-                <el-button type="primary" icon="el-icon-edit" @click="group.length!=1?groupUpdateAlert():groupUpdate()">修改群组名称</el-button>
-                <el-button type="primary" icon="el-icon-delete"  @click="group.length==0?checkNullAlert():groupDelete()">删除</el-button>
+                <el-button type="primary" icon="el-icon-plus" :disabled="groupSearch.length<=0 ? true : false" @click="group.length!=1?groupUpdateAlert():routerPushGroupmember()">修改群组成员</el-button>
+                <el-button type="primary" icon="el-icon-plus" :disabled="groupSearch.length<=0 ? true : false" @click="groupAdd">创建新群组</el-button>
+                <el-button type="primary" icon="el-icon-edit" @click="group.length!=1?groupUpdateAlert():groupUpdate()" :disabled="groupSearch.length<=0 ? true : false">修改群组名称</el-button>
+                <el-button type="primary" icon="el-icon-delete"  @click="group.length==0?checkNullAlert():groupDelete()" :disabled="groupSearch.length<=0 ? true : false">删除</el-button>
             </div>
-            <el-table stripe ref="multipleTable" :data="groupSearch" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange" @cell-click="routerPushGroupmember">
+            <el-table stripe ref="multipleTable" :data="groupSearch" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange" @cell-click="selectGroup">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
                 <el-table-column prop="groupName" label="群组名称" width="120">
@@ -46,9 +46,20 @@
             </div>
         </div>
         <!-- 添加框-添加群组按钮的弹框 -->
-        <!-- 修改框-点击修改群组名称的修改框-可多选改多个 -->
-        <!-- 删除框-删除按钮的确定弹框 -->
-
+        <div>
+            <el-dialog title="创建新群组" :visible.sync="groupAddDialog">
+                <el-form :model="form">
+                    <p style="text-align:left;padding-left:1px;">新群组所属机构为：{{groupAddOrganizationName}}</p>
+                    <el-form-item label="群组名称" label-width="70px">
+                        <el-input v-model="form.name" autocomplete="off"></el-input>
+                    </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="groupAddDialog = false">取 消</el-button>
+                    <el-button type="primary" @click="groupAddSubmit">创 建</el-button>
+                </div>
+            </el-dialog>
+        </div>
         <div style="clear:both;"></div>
     </div>
 </template>
@@ -65,17 +76,9 @@
                 this.searchTimer=setTimeout(()=>{
                     console.log(this.groupSearchContent,111)
                     console.log(this.groupSearch.groupName,111)
-                    //将首次查询状态修改
-                    // this.GroupSearchFirst=false;
                     //将输入框内开头和结尾的空格去除
-                    // this.GroupSearchClick=this.GroupSearch.trim();
-                    // this.SearchList=[];
-                    // for(let item in this.GroupList){
-                    //     let i=this.GroupList[item].name.indexOf(this.GroupSearchClick)
-                    //     if(i!=-1){
-                    //         this.SearchList.push(this.GroupList[item])
-                    //     }
-                    // }
+                    let content=this.groupSearchContent.trim();
+                    //将contentc传给后端。后端传回数组给this.groupSearch
                     this.searchTimer=undefined;
                 },2000)
                 
@@ -83,22 +86,44 @@
     },
 
     methods: {
-        routerPushGroupmember(){//点击表格的某一行触发
+        selectGroup(val){//右侧列表点击某一行触发的函数
+            let id
+            for(var i in this.groupSearch){
+                if(this.groupSearch[i].groupId==val.groupId){
+                    id=i
+                }
+            }
+            //右侧列表点击某一行则等于选择此行的复选框
+            this.toggleSelection([this.groupSearch[id]])
+        },
+        toggleSelection(rows) {//右侧列表点击某一行则等于选择此行的复选框
+            if (rows) {
+                    for(var row of rows){
+                    this.$refs.multipleTable.toggleRowSelection(row);
+                }
+            } else {
+                this.$refs.multipleTable.clearSelection();
+            }
+        },
+        routerPushGroupmember(){//点击修改成员触发
             //跳转群组信息页面
             this.$router.push('/Groupmember')
         },
         handleSelectionChange(val){//当列表选择项发生变化时会触发该事件
             this.group=val;
-            // console.log(this.group,567)
+            console.log(this.group,567)
             
         },
         handleNodeClick(data) {//获取左侧目录--当前选中的组织机构id
-            console.log(data.id);
+            console.log(data,71);
+            this.groupAddOrganizationName=data.label
             this.organizationId=data.id;
+            this.form.organizationId=data.id
+            console.log(this.form.organizationId,333)
             //向后端发送请求查询组织机构id对应的群组----待做
             //接收到对应的群组数据后，存入groupSearch数组----待做
             this.groupajax()
-            console.log(this.groupSearch)
+            // console.log(this.groupSearch)
         },
         filterNode(value, data) {//左侧目录--查询
             if (!value) return true;
@@ -128,6 +153,7 @@
                 this.$prompt('请输入新群组名', {
                     confirmButtonText: '确定修改',
                     cancelButtonText: '取消',
+                    inputValue:name//输入框的初始文本为原群组名
                     }).then(({ value }) => {
                         console.log(value)
                         nameNew=value;
@@ -185,7 +211,24 @@
                 }
         })
       },
-      
+      groupAdd(){
+          //让
+          this.groupAddDialog=true;
+      },
+      groupAddSubmit(){
+          this.groupAddDialog = false;
+        //   将form里的name和机构id传给后端
+        // 请求成功后，提示创建成功
+        this.$message({
+          message: '创建成功',
+          type: 'success'
+        });
+        // 创建失败
+        this.$message({
+          message: '创建失败',
+          type: 'warning'
+        });
+      }
     },
 
     data() {
@@ -196,93 +239,99 @@
             searchTimer:undefined,//自动搜索的定时器
             groupSearchContent:'',//右侧搜索input框内容
             organizationId:-1,//左侧目录选择的组织机构Id
-        data: [{//左侧目录数据
-          id: 1,
-          label: '一级 1',
-          children: [{
-              id: 4,
-            label: '二级 1-1',
-            children: [{
-                id: 9,
-              label: '三级 1-1-1'
-            }, {
-                id: 10,
-              label: '三级 1-1-2'
-            }]
-          }]
-        }, {
-          id: 2,
-          label: '一级 2',
-          children: [{
-            id: 5,
-            label: '二级 2-1'
-          }, {
-            id: 6,
-            label: '二级 2-2'
-          }]
-        }, {
-          id: 3,
-          label: '一级 3',
-          children: [{
-            id: 7,
-            label: '二级 3-1'
-          }, {
-            id: 8,
-            label: '二级 3-2'
-          }]
-        },
-        {
-          id: 9,
-          label: '一级 3'},
-          {
-          id: 10,
-          label: '一级 3'},
-          {
-          id: 11,
-          label: '一级 3'},
-          {
-          id: 12,
-          label: '一级 3'},
-          {
-          id: 13,
-          label: '一级 3'},
-          {
-          id: 14,
-          label: '一级 3'},
-          {
-          id: 15,
-          label: '一级 3'},
-          {
-          id: 16,
-          label: '一级 3'},
-          {
-          id: 17,
-          label: '一级 3'},
-          {
-          id: 18,
-          label: '一级 3'},
-          {
-          id: 19,
-          label: '一级 3'},
-          {
-          id: 20,
-          label: '一级 3'},
-          {
-          id: 21,
-          label: '一级 3'},
-          {
-          id: 22,
-          label: '一级 3'},
-          ],
-        defaultProps: {//左侧目录
-          children: 'children',
-          label: 'label'
-        },
-        groupSearch:[//右侧目录获取的列表数据
-        ],
-        group: [],//右侧选择的内容
-          
-        
+            groupAddDialog:false,//右侧添加新分组的弹框是否显示
+            groupAddOrganizationName:'',//右侧添加新分组的弹框的所属机构名
+            form: {
+                    name: '',
+                    organizationId: '',
+                },
+                    data: [{//左侧目录数据
+                        id: 1,
+                        label: '一级 1',
+                        children: [{
+                            id: 4,
+                            label: '二级 1-1',
+                            children: [{
+                                id: 9,
+                            label: '三级 1-1-1'
+                            }, {
+                                id: 10,
+                            label: '三级 1-1-2'
+                            }]
+                        }]
+                        }, {
+                        id: 2,
+                        label: '一级 2',
+                        children: [{
+                            id: 5,
+                            label: '二级 2-1'
+                        }, {
+                            id: 6,
+                            label: '二级 2-2'
+                        }]
+                        }, {
+                        id: 3,
+                        label: '一级 3',
+                        children: [{
+                            id: 7,
+                            label: '二级 3-1'
+                        }, {
+                            id: 8,
+                            label: '二级 3-2'
+                        }]
+                        },
+                        {
+                        id: 9,
+                        label: '一级 3'},
+                        {
+                        id: 10,
+                        label: '一级 3'},
+                        {
+                        id: 11,
+                        label: '一级 3'},
+                        {
+                        id: 12,
+                        label: '一级 3'},
+                        {
+                        id: 13,
+                        label: '一级 3'},
+                        {
+                        id: 14,
+                        label: '一级 3'},
+                        {
+                        id: 15,
+                        label: '一级 3'},
+                        {
+                        id: 16,
+                        label: '一级 3'},
+                        {
+                        id: 17,
+                        label: '一级 3'},
+                        {
+                        id: 18,
+                        label: '一级 3'},
+                        {
+                        id: 19,
+                        label: '一级 3'},
+                        {
+                        id: 20,
+                        label: '一级 3'},
+                        {
+                        id: 21,
+                        label: '一级 3'},
+                        {
+                        id: 22,
+                        label: '一级 3'},
+                    ],
+                    defaultProps: {//左侧目录
+                    children: 'children',
+                    label: 'label'
+                    },
+                    groupSearch:[//右侧目录获取的列表数据
+                    ],
+                    group: [],//右侧选择的内容
+                    
+                    
       };
     }
   };
@@ -295,4 +344,10 @@
 .el-pagination{
     padding: 10px 5px !important;
 }
+/* 修改右侧群组列表--创建新群组弹框样式 */
+.el-dialog__wrapper /deep/ .el-dialog{
+    width:26% !important;
+}
+
 </style>
+

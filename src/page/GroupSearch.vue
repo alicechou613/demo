@@ -1,4 +1,5 @@
 <template>
+<!-- 自己做的版本 -->
     <div style="width:600px;margin:0 auto;">
         <!-- 搜索框 -->
         <div>

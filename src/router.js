@@ -14,7 +14,7 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    {path: '/',component: GroupSearch},
+    {path: '/',component: Groupmember},
     {path: '/Groupmember',component: Groupmember},
     {path: '/mmm',component: mmm},
     {path: '/group',component: Group},
