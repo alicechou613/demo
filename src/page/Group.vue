@@ -23,7 +23,7 @@
                 <el-input v-model="groupSearchContent" placeholder="请输入内容"></el-input>
             </div>
             <div style="text-align:right;margin-right:20px;padding:5px;">
-                <el-button type="primary" icon="el-icon-plus" :disabled="groupSearch.length<=0 ? true : false" @click="group.length!=1?groupUpdateAlert():routerPushGroupmember()">修改群组成员</el-button>
+                <el-button type="primary" icon="el-icon-edit" :disabled="groupSearch.length<=0 ? true : false" @click="group.length!=1?groupUpdateAlert():routerPushGroupmember()">修改群组成员</el-button>
                 <el-button type="primary" icon="el-icon-plus" :disabled="groupSearch.length<=0 ? true : false" @click="groupAdd">创建新群组</el-button>
                 <el-button type="primary" icon="el-icon-edit" @click="group.length!=1?groupUpdateAlert():groupUpdate()" :disabled="groupSearch.length<=0 ? true : false">修改群组名称</el-button>
                 <el-button type="primary" icon="el-icon-delete"  @click="group.length==0?checkNullAlert():groupDelete()" :disabled="groupSearch.length<=0 ? true : false">删除</el-button>
@@ -40,6 +40,7 @@
                 <el-table-column prop="cc" label="群组说明3" show-overflow-tooltip>
                 </el-table-column>
             </el-table>
+            <!-- 如果数据大于单页数据size才显示分页-等接口 -->
             <div v-show="groupSearch.length>=1" style="margin:5px,0 5px,0">
                 <el-pagination background layout="prev, pager, next" :page-size="PageSize" :total="56" @current-change="handleCurrentChange"> 
                 </el-pagination>
@@ -111,15 +112,15 @@
         },
         handleSelectionChange(val){//当列表选择项发生变化时会触发该事件
             this.group=val;
-            console.log(this.group,567)
+            // console.log(this.group,567)
             
         },
         handleNodeClick(data) {//获取左侧目录--当前选中的组织机构id
-            console.log(data,71);
+            // console.log(data,71);
             this.groupAddOrganizationName=data.label
             this.organizationId=data.id;
             this.form.organizationId=data.id
-            console.log(this.form.organizationId,333)
+            // console.log(this.form.organizationId,333)
             //向后端发送请求查询组织机构id对应的群组----待做
             //接收到对应的群组数据后，存入groupSearch数组----待做
             this.groupajax()
@@ -140,7 +141,7 @@
                 // {groupId:1,groupName:'分组1',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:2,groupName:'分组2',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:3,groupName:'分组3',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:4,groupName:'分组4',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:5,groupName:'分组5',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:6,groupName:'分组6',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:7,groupName:'分组7',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:8,groupName:'分组8',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:9,groupName:'分组9',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:10,groupName:'分组10',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'}
             // ]
         },
-        groupajax(){
+        groupajax(){// 请求单页列表数据的函数
             this.groupSearch=[
             // {groupId:1,groupName:'分组1',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:2,groupName:'分组2',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:3,groupName:'分组3',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:4,groupName:'分组4',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:5,groupName:'分组5',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:6,groupName:'分组6',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:7,groupName:'分组7',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:8,groupName:'分组8',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:9,groupName:'分组9',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:10,groupName:'分组10',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:11,groupName:'分组11',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:12,groupName:'分组12',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:13,groupName:'分组13',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:14,groupName:'分组14',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:15,groupName:'分组15',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:16,groupName:'分组16',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:17,groupName:'分组17',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:18,groupName:'分组18',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:19,groupName:'分组19',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:20,groupName:'分组20',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:21,groupName:'分组21',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:22,groupName:'分组22',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:23,groupName:'分组23',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:24,groupName:'分组24',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:25,groupName:'分组25',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:26,groupName:'分组26',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:27,groupName:'分组27',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:28,groupName:'分组28',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:29,groupName:'分组29',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:30,groupName:'分组30',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:31,groupName:'分组31',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:32,groupName:'分组32',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'}
                 {groupId:1,groupName:'分组1',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:2,groupName:'分组2',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:3,groupName:'分组3',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:4,groupName:'分组4',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:5,groupName:'分组5',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:6,groupName:'分组6',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:7,groupName:'分组7',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:8,groupName:'分组8',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:9,groupName:'分组9',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'},{groupId:10,groupName:'分组10',aa:'ewwfsdfsfsfdfdsdf',bb:'adsadadas',cc:'adasdee3333'}
@@ -184,23 +185,29 @@
         groupDelete() {//右侧群组列表--删除按钮
             //给选项升序排序（默认是按选择顺序排的）
             // this.group=this.group.sort(function(a,b){return a-b})
-            console.log(this.group)
-            let groupDeleteList=this.group
-            
-            this.$confirm('您是否要删除'+this.group, {
+            // console.log(this.group)
+            let list=[];
+            for(let item of this.group){
+                list.push(item.groupName)
+                // console.log(list)
+            }
+            this.groupNameDeleteString=list.join('、')
+            // console.log(nameString,65)
+            // console.log(groupDeleteList,12)
+            this.$confirm('您是否要删除'+this.groupNameDeleteString+'？', {
                 confirmButtonText: '确定删除',
                 cancelButtonText:'取消',
-                callback: action => {
-                    console.log(48908908)
-                    //向后端发送请求删除数据
+                type: 'warning',
+            }).then(()=>{
+                 //向后端发送请求删除数据
                     //删除可同时删除多个，需要遍历删除成功的群组，将name改成string弹框告知
                     //if判断，若部分删除成功则弹另一个弹框告知
                     //全部删除成功弹框告知用户
-                    this.$message({
+                this.$message({
                         type: 'success',
-                        message: '您已成功删除'+nameNew+'群组'
+                        message: '您已成功删除'+this.groupNameDeleteString+'群组'
                     });
-                }
+            }).catch(()=>{
             })
       },
       checkNullAlert() {// 提示框-未选择就点击按钮的弹框
@@ -241,6 +248,7 @@
             organizationId:-1,//左侧目录选择的组织机构Id
             groupAddDialog:false,//右侧添加新分组的弹框是否显示
             groupAddOrganizationName:'',//右侧添加新分组的弹框的所属机构名
+            groupNameDeleteString:'',//右侧删除群分组的提示文
             form: {
                     name: '',
                     organizationId: '',

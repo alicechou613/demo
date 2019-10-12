@@ -10,11 +10,13 @@ import GroupSearch from './page/GroupSearch.vue'
 import demo from './page/demo.vue'
 import mmm from './page/mmm.vue'
 import Groupmember from './page/Groupmember.vue'
+import abcd from './page/abcd.vue'
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {path: '/',component: Groupmember},
+    {path: '/abcd',component: abcd},
     {path: '/Groupmember',component: Groupmember},
     {path: '/mmm',component: mmm},
     {path: '/group',component: Group},
