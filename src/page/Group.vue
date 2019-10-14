@@ -20,7 +20,7 @@
         <!-- 右侧查询到的群组详情 -->
         <div style="width:700px;height:676.8px;border:1px #7dc5eb solid;float:left;margin-left:20px;padding:5px;box-sizing:border-box;">
             <div style="padding:5px;">
-                <el-input v-model="groupSearchContent" placeholder="请输入内容"></el-input>
+                <el-input v-model="groupSearchContent" placeholder="请输入要查询的群组名"></el-input>
             </div>
             <div style="text-align:right;margin-right:20px;padding:5px;">
                 <el-button type="primary" icon="el-icon-edit" :disabled="groupSearch.length<=0 ? true : false" @click="group.length!=1?groupUpdateAlert():routerPushGroupmember()">修改群组成员</el-button>
@@ -41,8 +41,9 @@
                 </el-table-column>
             </el-table>
             <!-- 如果数据大于单页数据size才显示分页-等接口 -->
-            <div v-show="groupSearch.length>=1" style="margin:5px,0 5px,0">
-                <el-pagination background layout="prev, pager, next" :page-size="PageSize" :total="56" @current-change="handleCurrentChange"> 
+            <!-- v-show条件到时候要改成>=size+1 -->
+            <div  style="padding:10px;" v-show="groupSearch.length>=1">
+                <el-pagination background layout="prev, pager, next"  :current-page.sync="CurrentPage" :page-size="PageSize" :total="56" @current-change="handleCurrentChange"> 
                 </el-pagination>
             </div>
         </div>
@@ -71,6 +72,8 @@
               this.$refs.tree.filter(val);
       },
             groupSearchContent(){//右侧搜索框改变时触发
+                //查询时，页码回到1
+                this.CurrentPage=1;
                 if(this.searchTimer!==undefined){
                     clearTimeout(this.searchTimer);
                 }
@@ -108,7 +111,7 @@
         },
         routerPushGroupmember(){//点击修改成员触发
             //跳转群组信息页面
-            this.$router.push('/Groupmember')
+            this.$router.push('/GroupMember')
         },
         handleSelectionChange(val){//当列表选择项发生变化时会触发该事件
             this.group=val;

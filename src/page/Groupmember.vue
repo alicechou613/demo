@@ -3,7 +3,7 @@
         <!-- 群组成员详情列表 -->
         <div style="width:1000px;border:1px #7dc5eb solid;margin:auto;padding:5px;box-sizing:border-box;">
             <div style="padding:5px;">
-                <el-input v-model="groupSearchContent" placeholder="请输入内容"></el-input>
+                <el-input v-model="groupSearchContent" placeholder="请输入要搜索的成员名"></el-input>
             </div>
             <div style="text-align:right;margin-right:20px;padding:5px;">
                 <el-button type="primary" icon="el-icon-plus">添加成员</el-button>
@@ -22,8 +22,9 @@
                 </el-table-column>
             </el-table>
             <!-- 如果数据大于单页数据size才显示分页-等接口 -->
-            <div v-show="memeberSearch.length>=1" style="margin:5px,0 5px,0">
-                <el-pagination background layout="prev, pager, next" :page-size="PageSize" :total="56" @current-change="handleCurrentChange"> 
+            <!-- v-show条件到时候要改成>=size+1 -->
+            <div v-show="memeberSearch.length>=1" style="padding:10px;">
+                <el-pagination background layout="prev, pager, next"  :current-page.sync="CurrentPage" :page-size="PageSize" :total="56" @current-change="handleCurrentChange"> 
                 </el-pagination>
             </div>
         </div>
@@ -32,7 +33,7 @@
 <script>
 export default {
     methods: {
-        handleCurrentChange(val){//右侧列表页码改变时触发
+        handleCurrentChange(val){//列表页码改变时触发
             this.CurrentPage=val;
             console.log(this.CurrentPage,33);
             //调用后台数据更新列表数组，当前页面，
@@ -114,20 +115,22 @@ export default {
             CurrentPage:1,//目录当前页码
             memeberSearch:[//群成员数据 
                 {userId:1,name:'张三',department1:'北研',department2:'一处',department3:'一组'},
-                {userId:2,name:'张2三',department1:'北研',department2:'一处',department3:'一组'},
-                {userId:3,name:'张3三',department1:'北研',department2:'一处',department3:'一组'},
-                {userId:4,name:'张4三',department1:'北研',department2:'一处',department3:'一组'},
-                {userId:5,name:'张5三',department1:'北研',department2:'一处',department3:'一组'},
-                {userId:6,name:'张6三',department1:'北研',department2:'一处',department3:'一组'},
-                {userId:7,name:'张三',department1:'北研',department2:'一处',department3:'一组'},
-                {userId:8,name:'张三',department1:'北研',department2:'一处',department3:'一组'},
-                {userId:9,name:'张三',department1:'北研',department2:'一处',department3:'一组'},
-                {userId:10,name:'张三',department1:'北研',department2:'一处',department3:'一组'},
+                {userId:2,name:'李四',department1:'北研',department2:'一处',department3:'一组'},
+                {userId:3,name:'王伟',department1:'北研',department2:'一处',department3:'一组'},
+                {userId:4,name:'乌日图',department1:'北研',department2:'一处',department3:'一组'},
+                {userId:5,name:'赵丽丽',department1:'北研',department2:'一处',department3:'一组'},
+                {userId:6,name:'陈磊',department1:'北研',department2:'一处',department3:'一组'},
+                {userId:7,name:'应盈',department1:'北研',department2:'一处',department3:'一组'},
+                {userId:8,name:'蒋群',department1:'北研',department2:'一处',department3:'一组'},
+                {userId:9,name:'晚晚',department1:'北研',department2:'一处',department3:'一组'},
+                {userId:10,name:'高峰',department1:'北研',department2:'一处',department3:'一组'},
             ]
         }
     },
     watch: {
             groupSearchContent(){//右侧搜索框改变时触发
+                //查询时，页码回到1
+                this.CurrentPage=1;
                 if(this.searchTimer!==undefined){
                     clearTimeout(this.searchTimer);
                 }
